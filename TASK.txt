@@ -1,0 +1,4 @@
+- remove computer lab, Make a different section or room for lab
+- logic for occupied rooms
+- popups empty circle fix
+

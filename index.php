@@ -67,7 +67,7 @@ if (!$selected_batch && !empty($batches)) {
             <div class="card-header student-card-header">
                 <h2>Weekly Class Schedule </h2>
             </div>
-            <?php include 'routine/schedule_table.php'; ?>
+            <?php include 'routine/routine_table.php'; ?>
         </div>
 
         <div class="card">

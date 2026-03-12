@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title; ?> - UniRoutine</title>
-    <link rel="stylesheet" href="../assets/css/admin-style.css">
+    <link rel="stylesheet" href="../assets/css/admin-style.css?v=<?php echo filemtime('../assets/css/admin-style.css'); ?>">
     <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script>
 </head>
 <body>
@@ -24,9 +24,9 @@
                 <i data-lucide="user-circle"></i>
                 <span id="adminName"><?php echo isset($_SESSION['name']) ? htmlspecialchars($_SESSION['name']) : 'Admin User'; ?></span>
             </div>
-            <a href="../login/logout.php" class="btn-logout">
+            <button onclick="logout()" class="btn-logout" style="border: none; font-family: inherit;">
                 <i data-lucide="log-out"></i>
                 Logout
-            </a>
+            </button>
         </div>
     </header>

@@ -1,7 +1,7 @@
 <?php
 /**
- * Login Page for UniRoutine
- * Handles user authentication and session management.
+ * Admin Login Page for UniRoutine
+ * Handles administrator authentication.
  */
 
 // Start session
@@ -10,9 +10,9 @@ session_start();
 // Include database connection
 require_once '../includes/db-config.php';
 
-// Redirect if already logged in as teacher
-if (isset($_SESSION['user_id']) && strtolower($_SESSION['role']) === 'teacher') {
-    header("Location: ../teacher-dashboard/index.php");
+// Redirect if already logged in as admin
+if (isset($_SESSION['user_id']) && strtolower($_SESSION['role']) === 'admin') {
+    header("Location: ../admin/index.php");
     exit();
 }
 
@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         try {
             // Prepare statement to prevent SQL injection
-            $stmt = $pdo->prepare("SELECT * FROM user WHERE email = ?");
+            $stmt = $pdo->prepare("SELECT * FROM user WHERE email = ? AND LOWER(role) = 'admin'");
             $stmt->execute([$email]);
             $user = $stmt->fetch();
 
@@ -45,25 +45,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
 
                 if ($authenticated) {
-                    $role = strtolower($user['role']);
-                    
-                    if ($role === 'teacher') {
-                        // Set session variables
-                        $_SESSION['user_id'] = $user['id'];
-                        $_SESSION['email'] = $user['email'];
-                        $_SESSION['role'] = $user['role'];
-                        $_SESSION['name'] = $user['name'] ?? 'Teacher';
+                    // Set session variables
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['email'] = $user['email'];
+                    $_SESSION['role'] = $user['role']; // 'admin'
+                    $_SESSION['name'] = $user['name'] ?? 'Admin';
 
-                        header("Location: ../teacher-dashboard/index.php");
-                        exit();
-                    } else {
-                        $error = "Access denied. This portal is for teachers only.";
-                    }
+                    header("Location: ../admin/index.php");
+                    exit();
                 } else {
-                    $error = "Invalid email or password.";
+                    $error = "Invalid admin credentials.";
                 }
             } else {
-                $error = "Invalid email or password.";
+                $error = "Access denied or invalid credentials.";
             }
         } catch (PDOException $e) {
             $error = "Database error: " . $e->getMessage();
@@ -76,9 +70,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniRoutine - Login</title>
+    <title>Admin Login - UniRoutine</title>
     <link rel="stylesheet" href="../assets/css/login-styles.css">
     <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+    <style>
+        .login-page {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+        }
+        .logo-circle {
+            background-color: #4f46e5;
+        }
+        .btn-primary {
+            background-color: #4f46e5;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca;
+        }
+    </style>
 </head>
 <body class="login-page">
     <div class="login-container">
@@ -86,16 +94,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="logo-circle">
                 <img src="../assets/images/ku.png" alt="University Logo">
             </div>
-            <h1>UniRoutine</h1>
-            <p>University Routine Management System</p>
+            <h1 style="color: #e0e7ff;">UniRoutine</h1>
+            <p style="color: #a5b4fc;">Administrator Portal</p>
         </div>
 
         <div class="login-card">
-            <h2 style="text-align: center; margin-bottom: 1.5rem; color: #111827;">Teacher's Portal</h2>
+            <h2 style="text-align: center; margin-bottom: 1.5rem; color: #111827;">Admin Login</h2>
 
-            <form id="authForm" method="POST" action="login.php">
+            <form id="authForm" method="POST" action="index.php">
                 <div>
-                    <label for="email">Email</label>
+                    <label for="email">Admin Email</label>
                     <input type="email" id="email" name="email" required value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>">
                 </div>
 
@@ -117,7 +125,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <?php endif; ?>
 
                 <button type="submit" class="btn-primary">
-                    <i data-lucide="log-in"></i>
+                    <i data-lucide="shield-check"></i>
                     Login
                 </button>
             </form>
@@ -126,7 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <a href="../index.php" style="text-decoration: none; width: 100%;">
                     <button class="btn-student-view" type="button" style="width: 100%; background-color: #f3f4f6; color: #4b5563;">
                         <i data-lucide="arrow-left"></i>
-                        Back to Schedule
+                        Continue to Routine
                     </button>
                 </a>
             </div>
@@ -157,4 +165,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </script>
 </body>
 </html>
-
